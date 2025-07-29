@@ -18,8 +18,12 @@ export class AuthService {
   ) { }
 
 
-  register(createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto)
+  async register(createUserDto: CreateUserDto) {
+    const user = await this.userService.create(createUserDto)
+    return {
+      ...user,
+      access_token: this.getJwt({ userId: user?.id! })
+    }
   }
 
   async login(loginDto: LoginDto) {

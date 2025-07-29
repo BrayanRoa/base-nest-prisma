@@ -29,16 +29,24 @@ export class UsersService {
   }
 
   async findAll(pagination: PaginationDto) {
-    return this.baseService.paginationResponse(
+    const { data, metadata } = await this.baseService.paginationResponse(
       this.baseService.prisma.user,
       pagination,
       ResponseUserDto
     )
+
+    return {
+      users: data,
+      metadata
+    }
   }
 
   async findOne(id: string) {
     const user = await this.baseService.prisma.user.findUnique({
-      where: { id, deletedAt: null }
+      where: { id, deletedAt: null },
+      include: {
+        post: true
+      }
     })
 
     if (!user) this.baseService.msgNotFound("id", id)
